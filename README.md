@@ -50,8 +50,11 @@ This ensures you get a 100% accurate list of models that are *actually deployabl
 `uv` will automatically handle dependency installation using the inline metadata in the script.
 
 ```bash
-# List models available in europe-west4
-uv run enumerate.py --region europe-west4 --project your-project-id
+# List models available in europe-west4 for ALL popular publishers
+uv run enumerate.py --region europe-west4 --publisher all
+
+# List only specific publishers
+uv run enumerate.py --region europe-west4 --publisher google,anthropic,meta
 ```
 
 ### Using standard pip
@@ -72,7 +75,7 @@ uv run enumerate.py --region europe-west4 --project your-project-id
 | :---          | :---                   | :---                                                                        |
 | `--region`    | `REGION`               | The Google Cloud region to check (e.g., `europe-west4`). Default: `us-central1`. |
 | `--project`   | `GOOGLE_CLOUD_PROJECT` | Your Google Cloud Project ID.                                               |
-| `--publisher` | N/A                    | The model publisher to list (default: `google`).                            |
+| `--publisher` | N/A                    | The model publisher(s). Can be `all`, a single ID (e.g., `anthropic`), or a comma-separated list (`google,meta`). Default: `google`. <br>Supported for `all`: `google`, `anthropic`, `meta`, `mistralai`, `cohere`, `ai21`. |
 
 *Note: CLI arguments take precedence over environment variables.*
 

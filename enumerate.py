@@ -173,6 +173,13 @@ def fetch_models(project_id: str, region: str, publisher: str = "google") -> Lis
 
     return available_models
 
+# ... imports ...
+
+# List of popular Model Garden publishers to check when --publisher=all is used
+POPULAR_PUBLISHERS = ["google", "anthropic", "meta", "mistralai", "cohere", "ai21"]
+
+# ... existing functions ...
+
 def main():
     load_dotenv()
 
@@ -181,7 +188,7 @@ def main():
     )
     parser.add_argument("--project", help="Google Cloud Project ID")
     parser.add_argument("--region", help="GCP Region (e.g., europe-west4)")
-    parser.add_argument("--publisher", default="google", help="Model Publisher (default: google)")
+    parser.add_argument("--publisher", default="google", help="Model Publisher(s). Can be 'all', a single publisher ('google'), or comma-separated ('google,anthropic'). Default: google")
     
     args = parser.parse_args()
 
@@ -190,19 +197,32 @@ def main():
     # Region is critical for the filtering logic
     region = args.region or os.getenv("REGION") or "us-central1"
 
-    # Execute
-    models = fetch_models(project_id, region, args.publisher)
-    
-    if models:
-        logger.info(f"Successfully retrieved {len(models)} models available in {region}.")
-        
-        # Output strictly the policy lines to stdout for easy piping
-        print(f"# Models available in {region} for publisher '{args.publisher}'")
-        for model in models:
-            # model.name is usually "publishers/google/models/..."
-            print(f"- {model.name}:predict")
+    # Determine list of publishers to query
+    if args.publisher.lower() == "all":
+        target_publishers = POPULAR_PUBLISHERS
     else:
-        logger.warning(f"No models found available in {region}.")
+        target_publishers = [p.strip() for p in args.publisher.split(",") if p.strip()]
 
+    total_found = 0
+    
+    for publisher in target_publishers:
+        logger.info(f"--- Processing Publisher: {publisher} ---")
+        models = fetch_models(project_id, region, publisher)
+        
+        if models:
+            total_found += len(models)
+            logger.info(f"Successfully retrieved {len(models)} models available in {region} for {publisher}.")
+            
+            # Output strictly the policy lines to stdout for easy piping
+            print(f"\n# Models available in {region} for publisher '{publisher}'")
+            for model in models:
+                # model.name is usually "publishers/google/models/..."
+                print(f"- {model.name}:predict")
+        else:
+            logger.warning(f"No models found available in {region} for publisher '{publisher}'.")
+
+    if total_found == 0:
+        logger.error(f"No models found for any requested publishers in {region}.")
+        
 if __name__ == "__main__":
     main()
