@@ -1,4 +1,4 @@
-# Vertex AI Model Enumerator
+# Vertex AI Model Policy Enumeration Gremlin
 
 ![Policy Gremlin](img/PolicyGremlin.png)
 
