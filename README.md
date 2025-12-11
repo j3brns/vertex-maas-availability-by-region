@@ -89,6 +89,8 @@ This allows you to pipe the output directly to files or variables.
 
 ## Terraform Integration
 
+**Disclaimer:** This Terraform integration is provided as a Proof of Concept (PoC) and is currently **untested**. It demonstrates how to leverage the script's output but requires thorough testing and validation in your specific environment before use in production.
+
 This repository includes a Terraform module in the `terraform/` directory to enforce the `constraints/aiplatform.restrictedModelUsage` organization policy using the discovered list.
 
 ### Workflow
