@@ -25,6 +25,7 @@ This ensures you get a 100% accurate list of models that are *actually deployabl
 
 - Python 3.9+
 - A Google Cloud Project with the **Vertex AI API** enabled (`aiplatform.googleapis.com`).
+- **Network access to `us-central1`**: The script performs initial model discovery from the `us-central1-aiplatform.googleapis.com` endpoint. Ensure your environment has outbound network access to this region.
 - [uv](https://github.com/astral-sh/uv) (Recommended) OR standard pip.
 
 ## Setup
