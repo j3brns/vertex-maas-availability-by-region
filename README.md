@@ -1,5 +1,7 @@
 # Vertex AI Model Enumerator
 
+![Policy Gremlin](img/PolicyGremlin.png)
+
 A robust utility to list Google Vertex AI models (Model Garden) available in specific regions, formatted for use in Google Cloud Organization Policies.
 
 ## The Problem
