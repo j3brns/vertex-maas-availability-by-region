@@ -82,23 +82,38 @@ uv run enumerate.py --region europe-west4 --publisher google,anthropic,meta
 ## Output
 
 The script separates log messages from the final output:
-- **Stderr:** Progress bars, debug logs, and warnings (e.g., connection pool size).
-- **Stdout:** The clean, final list of resource names.
+- **Stderr:** Progress bars, debug logs, and warnings.
+- **Stdout:** The clean, final list (or JSON).
 
-This allows you to pipe the output directly to a file for your policy definition:
+This allows you to pipe the output directly to files or variables.
 
-```bash
-uv run enumerate.py --region europe-west4 > allowed_models.txt
-```
+## Terraform Integration
 
-**Example Output:**
-```text
-# Models available in europe-west4 for publisher 'google'
-- publishers/google/models/gemini-1.5-pro-002:predict
-- publishers/google/models/gemini-2.0-flash-001:predict
-- publishers/google/models/text-bison:predict
-...
-```
+This repository includes a Terraform module in the `terraform/` directory to enforce the `constraints/aiplatform.restrictedModelUsage` organization policy using the discovered list.
+
+### Workflow
+
+1.  **Generate the Allowed List:**
+    Use the `--json` flag to capture the list of available models as a JSON array.
+    ```bash
+    # Capture the JSON output into a variable (Bash/Zsh)
+    export TF_VAR_allowed_models=$(uv run enumerate.py --region europe-west4 --json)
+    
+    # Or save to a file
+    uv run enumerate.py --region europe-west4 --json > allowed_models.json
+    ```
+
+2.  **Apply with Terraform:**
+    Navigate to the `terraform/` directory and apply the configuration.
+    ```bash
+    cd terraform
+    export TF_VAR_project_id="your-project-id"
+    
+    terraform init
+    terraform apply
+    ```
+
+    *Terraform will read the `TF_VAR_allowed_models` environment variable and enforce that ONLY the discovered models are allowed in your project.*
 
 ## Performance Note
 The "Verification" phase involves sending ~120 parallel HTTP requests to the regional API. This typically takes **5-15 seconds** depending on your network latency. You may see warnings about "Connection pool is full"; these are normal and can be ignored.

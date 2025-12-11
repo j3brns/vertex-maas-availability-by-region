@@ -33,6 +33,7 @@ import os
 import sys
 import argparse
 import logging
+import json
 from typing import Optional, List, Any
 import concurrent.futures
 
@@ -47,6 +48,9 @@ logging.basicConfig(
     stream=sys.stderr
 )
 logger = logging.getLogger(__name__)
+
+# List of popular Model Garden publishers to check when --publisher=all is used
+POPULAR_PUBLISHERS = ["google", "anthropic", "meta", "mistralai", "cohere", "ai21"]
 
 def get_project_id(arg_project: Optional[str]) -> str:
     """
@@ -173,13 +177,6 @@ def fetch_models(project_id: str, region: str, publisher: str = "google") -> Lis
 
     return available_models
 
-# ... imports ...
-
-# List of popular Model Garden publishers to check when --publisher=all is used
-POPULAR_PUBLISHERS = ["google", "anthropic", "meta", "mistralai", "cohere", "ai21"]
-
-# ... existing functions ...
-
 def main():
     load_dotenv()
 
@@ -189,6 +186,7 @@ def main():
     parser.add_argument("--project", help="Google Cloud Project ID")
     parser.add_argument("--region", help="GCP Region (e.g., europe-west4)")
     parser.add_argument("--publisher", default="google", help="Model Publisher(s). Can be 'all', a single publisher ('google'), or comma-separated ('google,anthropic'). Default: google")
+    parser.add_argument("--json", action="store_true", help="Output results as a JSON array (useful for Terraform/Automation).")
     
     args = parser.parse_args()
 
@@ -204,6 +202,7 @@ def main():
         target_publishers = [p.strip() for p in args.publisher.split(",") if p.strip()]
 
     total_found = 0
+    all_found_models = []
     
     for publisher in target_publishers:
         logger.info(f"--- Processing Publisher: {publisher} ---")
@@ -211,18 +210,25 @@ def main():
         
         if models:
             total_found += len(models)
+            all_found_models.extend(models)
             logger.info(f"Successfully retrieved {len(models)} models available in {region} for {publisher}.")
-            
-            # Output strictly the policy lines to stdout for easy piping
-            print(f"\n# Models available in {region} for publisher '{publisher}'")
-            for model in models:
-                # model.name is usually "publishers/google/models/..."
-                print(f"- {model.name}:predict")
         else:
             logger.warning(f"No models found available in {region} for publisher '{publisher}'.")
 
     if total_found == 0:
         logger.error(f"No models found for any requested publishers in {region}.")
+    
+    # Output Phase
+    if args.json:
+        # JSON Output for automation
+        # We append :predict here because that's what Org Policy needs
+        output_list = [f"{m.name}:predict" for m in all_found_models]
+        print(json.dumps(output_list, indent=2))
+    elif all_found_models:
+        # Standard Human-Readable Output
+        print(f"\n# Models available in {region} for publisher(s): {args.publisher}")
+        for model in all_found_models:
+             print(f"- {model.name}:predict")
         
 if __name__ == "__main__":
     main()
