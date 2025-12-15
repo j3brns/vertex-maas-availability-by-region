@@ -78,6 +78,7 @@ uv run enumerate.py --region europe-west4 --publisher google,anthropic,meta
 | `--region`    | `REGION`               | The Google Cloud region to check (e.g., `europe-west4`). Default: `us-central1`. |
 | `--project`   | `GOOGLE_CLOUD_PROJECT` | Your Google Cloud Project ID.                                               |
 | `--publisher` | N/A                    | The model publisher(s). Can be `all`, a single ID (e.g., `anthropic`), or a comma-separated list (`google,meta`). Default: `google`. <br>Supported for `all`: `google`, `anthropic`, `meta`, `mistralai`, `cohere`, `ai21`. |
+| `--json`      | N/A                    | Output the results as a JSON array instead of a plain text list. Useful for automation and CI/CD pipelines. |
 
 *Note: CLI arguments take precedence over environment variables.*
 
@@ -89,7 +90,22 @@ The script separates log messages from the final output:
 
 This allows you to pipe the output directly to files or variables.
 
-## Terraform Integration
+**Standard Output (Default):**
+```text
+# Models available in europe-west4 for publisher 'google'
+- publishers/google/models/gemini-1.5-pro-002:predict
+- publishers/google/models/gemini-2.0-flash-001:predict
+...
+```
+
+**JSON Output (`--json`):**
+```json
+[
+  "publishers/google/models/gemini-1.5-pro-002:predict",
+  "publishers/google/models/gemini-2.0-flash-001:predict",
+  ...
+]
+```
 
 **Disclaimer:** This Terraform integration is provided as a Proof of Concept (PoC) and is currently **untested**. It demonstrates how to leverage the script's output but requires thorough testing and validation in your specific environment before use in production.
 
