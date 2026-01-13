@@ -49,14 +49,20 @@ This ensures you get a 100% accurate list of models that are *actually deployabl
 
 ## Setup
 
-1.  **Authentication (Critical):**
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/j3brns/vertex-maas-availability-by-region.git
+    cd vertex-maas-availability-by-region
+    ```
+
+2.  **Authentication (Critical):**
     You must authenticate with Google Cloud before running the script. The script uses Application Default Credentials (ADC).
     ```bash
     gcloud auth application-default login
     ```
     *Alternatively, set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the path of a Service Account JSON key.*
 
-2.  **Configuration (Optional):**
+3.  **Configuration (Optional):**
     You can use a `.env` file to set default values for your project and region.
     ```bash
     cp .env.template .env
