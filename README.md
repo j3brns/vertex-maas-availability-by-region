@@ -23,6 +23,23 @@ This script implements a **Two-Stage Discovery & Verification** strategy:
 
 This ensures you get a 100% accurate list of models that are *actually deployable/usable* in your target region.
 
+### Global Endpoint vs Regional Endpoints
+
+**Important Discovery:** Vertex AI has two types of endpoints:
+
+1.  **Regional Endpoints** (e.g., `us-central1-aiplatform.googleapis.com`, `europe-west4-aiplatform.googleapis.com`)
+    *   Most models are deployed to specific regions
+    *   This script verifies availability against these endpoints
+    *   Suitable for data residency requirements
+
+2.  **Global Endpoint** (`aiplatform.googleapis.com`)
+    *   Routes requests dynamically to available regions
+    *   Higher availability, lower rate limits
+    *   **Gemini 3 models are ONLY available here** (as of January 2026)
+    *   Some preview models don't appear in list APIs but can be accessed directly
+
+**Gemini 3 Availability:** The latest Gemini 3 models (`gemini-3-pro-preview`, `gemini-3-flash-preview`) are currently exclusive to the global endpoint and not yet deployed to regional endpoints.
+
 ## Prerequisites
 
 - Python 3.9+
@@ -57,6 +74,10 @@ uv run enumerate.py --region europe-west4 --publisher all
 
 # List only specific publishers
 uv run enumerate.py --region europe-west4 --publisher google,anthropic,meta
+
+# IMPORTANT: The script currently only supports regional endpoints
+# To query the global endpoint (for Gemini 3 models), you'll need to query it separately
+# The global endpoint uses aiplatform.googleapis.com (not global-aiplatform.googleapis.com)
 ```
 
 ### Using standard pip
@@ -107,6 +128,16 @@ This allows you to pipe the output directly to files or variables.
 ]
 ```
 
+### Global Endpoint Models
+
+For models available on the global endpoint (including Gemini 3), a separate JSON file is provided: `vertex-google-models_global_13-01-25.json`
+
+**Key differences:**
+- Global endpoint includes Gemini 3 preview models (`gemini-3-pro-preview`, `gemini-3-flash-preview`)
+- Global endpoint only includes ~12 Gemini models (curated list)
+- Regional endpoints include 14-122+ models depending on the region
+- Some models on global endpoint don't appear in list APIs and must be accessed directly
+
 **Disclaimer:** This Terraform integration is provided as a Proof of Concept (PoC) and is currently **untested**. It demonstrates how to leverage the script's output but requires thorough testing and validation in your specific environment before use in production.
 
 This repository includes a Terraform module in the `terraform/` directory to enforce the `constraints/aiplatform.restrictedModelUsage` organization policy using the discovered list.
@@ -137,3 +168,16 @@ This repository includes a Terraform module in the `terraform/` directory to enf
 
 ## Performance Note
 The "Verification" phase involves sending ~120 parallel HTTP requests to the regional API. This typically takes **5-15 seconds** depending on your network latency. You may see warnings about "Connection pool is full"; these are normal and can be ignored.
+
+## Known Limitations
+
+### Global Endpoint Not Fully Supported
+The script currently only supports regional endpoints (e.g., `us-central1-aiplatform.googleapis.com`). The global endpoint (`aiplatform.googleapis.com`) uses a different URL format and is not handled by the `--region` parameter.
+
+### Gemini 3 Preview Models
+Gemini 3 models (`gemini-3-pro-preview`, `gemini-3-flash-preview`) exist on the global endpoint but:
+1. They don't appear in the `list_publisher_models()` API response
+2. They can only be discovered by directly querying their resource names via `get_publisher_model()`
+3. They are not yet deployed to regional endpoints (as of January 2026)
+
+This is why the global endpoint file (`vertex-google-models_global_13-01-25.json`) was created manually through direct verification rather than automated discovery.

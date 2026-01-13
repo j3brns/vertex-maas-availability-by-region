@@ -1,0 +1,22 @@
+[
+  "publishers/google/models/textembedding-gecko:predict",
+  "publishers/google/models/imagetext:predict",
+  "publishers/google/models/imagegeneration:predict",
+  "publishers/google/models/imagen-3.0-generate-002:predict",
+  "publishers/google/models/imagen-4.0-generate-001:predict",
+  "publishers/google/models/imagen-4.0-ultra-generate-001:predict",
+  "publishers/google/models/imagen-3.0-capability-001:predict",
+  "publishers/google/models/imagen-3.0-capability-002:predict",
+  "publishers/google/models/imagen-4.0-fast-generate-001:predict",
+  "publishers/google/models/image-segmentation-001:predict",
+  "publishers/google/models/gemma3:predict",
+  "publishers/google/models/gemini-2.5-flash:predict",
+  "publishers/google/models/gemini-embedding-001:predict",
+  "publishers/google/models/gemini-2.0-flash-lite-001:predict",
+  "publishers/google/models/gemini-2.0-flash-001:predict",
+  "publishers/google/models/multimodalembedding:predict",
+  "publishers/google/models/virtual-try-on-preview-08-04:predict",
+  "publishers/google/models/gemini-2.5-pro:predict",
+  "publishers/google/models/gemini-2.5-flash-lite:predict",
+  "publishers/google/models/gemini-2.5-flash-image:predict"
+]
