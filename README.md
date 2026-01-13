@@ -130,13 +130,19 @@ This allows you to pipe the output directly to files or variables.
 
 ### Global Endpoint Models
 
-For models available on the global endpoint (including Gemini 3), a separate JSON file is provided: `vertex-google-models_global_13-01-25.json`
+For models available on the global endpoint (including Gemini 3), a separate JSON file is provided in the `output/` directory: `output/vertex-google-models_global_13-01-25.json`
 
 **Key differences:**
 - Global endpoint includes Gemini 3 preview models (`gemini-3-pro-preview`, `gemini-3-flash-preview`)
 - Global endpoint only includes ~12 Gemini models (curated list)
 - Regional endpoints include 14-122+ models depending on the region
 - Some models on global endpoint don't appear in list APIs and must be accessed directly
+
+**Sample output files:**
+- `output/vertex-google-models_global_13-01-25.json` - Global endpoint (12 models)
+- `output/vertex-google-models_us-central1_13-01-25.json` - Master catalog (122 models)
+- `output/vertex-google-models_europe-west4_13-01-25.json` - Europe West 4 (20 models)
+- `output/vertex-google-models_europe-west2_13-01-25.json` - Europe West 2 (14 models)
 
 **Disclaimer:** This Terraform integration is provided as a Proof of Concept (PoC) and is currently **untested**. It demonstrates how to leverage the script's output but requires thorough testing and validation in your specific environment before use in production.
 
@@ -149,9 +155,9 @@ This repository includes a Terraform module in the `terraform/` directory to enf
     ```bash
     # Capture the JSON output into a variable (Bash/Zsh)
     export TF_VAR_allowed_models=$(uv run enumerate.py --region europe-west4 --json)
-    
-    # Or save to a file
-    uv run enumerate.py --region europe-west4 --json > allowed_models.json
+
+    # Or save to a file in the output directory
+    uv run enumerate.py --region europe-west4 --json > output/allowed_models.json
     ```
 
 2.  **Apply with Terraform:**
